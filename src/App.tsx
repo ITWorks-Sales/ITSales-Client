@@ -5,6 +5,7 @@ import './App.global.css';
 import HomeNavigation from './Components/home/HomeNavigation';
 import LinkedinProfile from './Components/linkedinProfile';
 import Login from './Components/Login';
+import IPCInitialization from './ipc';
 
 const queryClient = new QueryClient();
 queryClient.invalidateQueries('profile');
@@ -23,3 +24,5 @@ export default function App() {
     </>
   );
 }
+
+IPCInitialization();

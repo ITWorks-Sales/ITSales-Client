@@ -11,14 +11,15 @@
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 import path from 'path';
-import { app, BrowserWindow, shell } from 'electron';
+import { app, BrowserWindow, shell, Menu, MenuItem, clipboard } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 
 import { ipcMain } from 'electron';
 
 import MenuBuilder from './menu';
-import { ILIProfile } from './api/types';
+import { ILIProfile, IProxy } from './api/types';
+import { PopupOptions, session } from 'electron/main';
 
 export default class AppUpdater {
   constructor() {
@@ -74,8 +75,8 @@ const createWindow = async () => {
 
   mainWindow = new BrowserWindow({
     show: false,
-    width: 1024,
-    height: 728,
+    width: 1280,
+    height: 720,
     icon: getAssetPath('icon.png'),
     title: 'Linkedin Client - Main Window',
     webPreferences: {
@@ -138,25 +139,73 @@ app.on('activate', () => {
   if (mainWindow === null) createWindow();
 });
 
-ipcMain.on('createNewWindow', (_, args) => {
-  const LIProfile: ILIProfile = args.profile;
+ipcMain.on('createNewWindow', async (_, args) => {
+  const { id, email, proxy }: ILIProfile = args.profile;
   let window = new BrowserWindow({
-    width: 1024,
-    height: 728,
+    width: 1800,
+    height: 1200,
     icon: getAssetPath('icon.png'),
     webPreferences: {
       nodeIntegration: true,
+      webviewTag: true,
     },
   });
 
-  profileWindows[LIProfile.id] = window;
+  profileWindows[id] = window;
 
-  window.loadURL(
-    `file://${__dirname}/index.html#/linkedinProfile/${LIProfile.id}`
-  );
+  await window.loadURL(`file://${__dirname}/index.html#/linkedinProfile/${id}`);
+  window.setTitle(`Linekdin Profile - ${email}`);
+  const webViewSession = session.fromPartition(`persist:${id}`);
+  if (proxy) {
+    webViewSession.setProxy({
+      proxyRules: `http://${proxy.ip}`,
+    });
+  }
 });
 
 ipcMain.on('setWindowTitle', (_, args: { id: number; title: string }) => {
   const { id, title } = args;
   profileWindows[id].setTitle(title);
+});
+
+app.on('login', async (event, _, __, authInfo, callback) => {
+  event.preventDefault();
+  if (!mainWindow) return;
+  if (authInfo.isProxy) {
+    mainWindow.webContents.send('getProxies');
+    ipcMain.once('getProxies-reply', (_, proxyList: IProxy[]) => {
+      console.log(proxyList);
+      const { login, password } = proxyList.find((proxy) =>
+        proxy.ip.includes(authInfo.host)
+      ) as IProxy;
+      console.log(login, password);
+      callback(login, password);
+    });
+  }
+});
+
+//MENU
+
+app.on('web-contents-created', (_, contents) => {
+  if (contents.getType() == 'webview') {
+    contents.on('context-menu', (_, data) => {
+      const { linkURL, mediaType, linkText } = data;
+      if (linkURL) {
+        const copyLink = new MenuItem({
+          id: 'copyLink',
+          label: 'Copy Link',
+          visible: linkURL.length > 0 && mediaType === 'none',
+          click: () => {
+            clipboard.write({
+              bookmark: linkText,
+              text: linkURL,
+            });
+          },
+        });
+        const menu = new Menu();
+        menu.insert(0, copyLink);
+        menu.popup(contents as PopupOptions);
+      }
+    });
+  }
 });
