@@ -4,7 +4,7 @@ import { useParams } from 'react-router';
 import { Switch, Route } from 'react-router-dom';
 import BrowserWindowView from './BrowserWindow';
 import CRM from './CRM';
-import SideBar from './SideBar/SideBar';
+import SideBar from './SideBar';
 export default function LinkedinProfile() {
   const { id } = useParams<{ id: string }>();
   const defaultLink = `/linkedinProfile/${id}`;
