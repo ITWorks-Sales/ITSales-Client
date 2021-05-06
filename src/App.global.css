@@ -4,6 +4,10 @@
  */
 @import '~antd/dist/antd.dark.css';
 
+.hidden {
+  display: none;
+}
+
 .vertical-center {
   margin: 0;
   position: absolute;
@@ -33,6 +37,12 @@
 }
 
 #homeNavigation .logo {
+  height: 32px;
+  margin: 16px;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+#profileSidebar .logo {
   height: 32px;
   margin: 16px;
   background: rgba(255, 255, 255, 0.3);

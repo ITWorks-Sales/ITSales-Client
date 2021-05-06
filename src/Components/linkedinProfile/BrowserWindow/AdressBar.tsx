@@ -28,19 +28,21 @@ function isValidURL(str: string) {
 }
 
 const accessPage = async (webView: WebviewTag, input: string) => {
-  if (isValidURL(input)) {
-    try {
-      await webView.loadURL(input);
-    } catch (err) {
-      webView.loadURL(
-        `http://google.com/search?q=${encodeURIComponent(input)}`
-      );
+  try {
+    if (isValidURL(input)) {
+      try {
+        await webView.loadURL(input);
+      } catch (err) {
+        webView.loadURL(
+          `http://google.com/search?q=${encodeURIComponent(input)}`
+        );
+      }
+      return;
     }
-    return;
-  }
-  return webView.loadURL(
-    `http://google.com/search?q=${encodeURIComponent(input)}`
-  );
+    return webView.loadURL(
+      `http://google.com/search?q=${encodeURIComponent(input)}`
+    );
+  } catch (err) {}
 };
 
 const AdressBar = ({ webView }: { webView: WebviewTag }) => {
@@ -82,10 +84,9 @@ const AdressBar = ({ webView }: { webView: WebviewTag }) => {
           <Search
             type="search"
             placeholder="input search text"
-            enterButton="Search"
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
-            onPressEnter={() => {
+            onSearch={() => {
               accessPage(webView, searchValue);
             }}
           />
