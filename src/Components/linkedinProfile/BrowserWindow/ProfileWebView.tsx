@@ -1,8 +1,8 @@
 import { WebviewTag } from 'electron';
 import { PageTitleUpdatedEvent } from 'electron/main';
 import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router';
 import AdressBar from './AdressBar';
-import ProfileIdContext from './ProfileIdContext';
 
 export default function ProfileWebView({
   webViewId,
@@ -13,7 +13,7 @@ export default function ProfileWebView({
   changePaneTitle: any;
   startPage: string;
 }) {
-  const id = React.useContext(ProfileIdContext);
+  const { id } = useParams<{ id: string }>();
   const webViewSelector = `webview[data-webviewid="${webViewId}"]`;
   const [webView, setWebView] = useState<WebviewTag>(
     document.querySelector(webViewSelector) as WebviewTag

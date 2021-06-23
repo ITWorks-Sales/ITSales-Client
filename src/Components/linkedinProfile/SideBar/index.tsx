@@ -1,5 +1,5 @@
 import React from 'react';
-import { Layout, Menu } from 'antd';
+import { Menu } from 'antd';
 import {
   DesktopOutlined,
   PieChartOutlined,
@@ -7,21 +7,23 @@ import {
   TeamOutlined,
   UserOutlined,
 } from '@ant-design/icons';
-import { useHistory, useParams } from 'react-router';
+import { useHistory } from 'react-router';
+import { useRecoilValue } from 'recoil';
+import linkeidnProfileIdState from '../atoms/linkeidnProfileIdState';
 
 type setStateBoolean = React.Dispatch<React.SetStateAction<boolean>>;
 
 const { SubMenu } = Menu;
 
 const SideBar = ({ showBrowser }: { showBrowser: setStateBoolean }) => {
-  const { id } = useParams<{ id: string }>();
+  const linkedinProfileId = useRecoilValue(linkeidnProfileIdState);
   const history = useHistory();
 
   const changePage = (
     isBrowserWindowRequired: boolean,
     newLocation: string
   ) => {
-    const defaultRoute = `/linkedinProfile/${id}`;
+    const defaultRoute = `/linkedinProfile/${linkedinProfileId}`;
     showBrowser(isBrowserWindowRequired);
     history.push(`${defaultRoute}/${newLocation}`);
   };
