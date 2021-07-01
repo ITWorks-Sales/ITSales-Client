@@ -1,3 +1,3 @@
-export class DeleteProxyDTO {
+export type DeleteProxyDTO = {
   ids: number[];
 }

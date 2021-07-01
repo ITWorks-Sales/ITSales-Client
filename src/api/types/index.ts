@@ -65,10 +65,7 @@ export type CRMFilters = {
   tagsFilter: number[];
 };
 
-export interface ILIUser {
-  id: number;
-  user?: IUser;
-  linkedin_profiles?: ILIProfile[];
+type ILIUserStringIndex  = {
   state: ILIUserState;
   notes: string;
   full_name: string;
@@ -78,19 +75,15 @@ export interface ILIUser {
   avatar_url: string;
   public_id: string;
   hash_id: string;
-  member_id: number;
   avatar_id: string;
   headline: string;
   location: string;
   industry: string;
   summary: string;
   birthday: string;
-  open_profile: boolean;
   email: string;
   phone_number: string;
   connected_at: string;
-  tags: ITag[];
-  message_histories: IMessageHistory[];
   current_company_name: string;
   current_company_position: string;
   company_name_1: string;
@@ -184,4 +177,14 @@ export interface ILIUser {
   company_start_date_10: string;
   company_end_date_10: string;
   [key: string]: string;
+}
+
+export type ILIUser = ILIUserStringIndex & {
+  id: number;
+  user?: IUser;
+  linkedin_profiles?: ILIProfile[];
+  member_id: number;
+  open_profile: boolean;
+  tags: ITag[];
+  message_histories: IMessageHistory[];
 }

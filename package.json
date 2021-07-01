@@ -13,6 +13,7 @@
     "start": "node -r @babel/register ./.erb/scripts/CheckPortInUse.js && cross-env yarn start:renderer",
     "start:main": "cross-env NODE_ENV=development electron -r ./.erb/scripts/BabelRegister ./src/main.dev.ts",
     "start:renderer": "cross-env NODE_ENV=development webpack serve --config ./.erb/configs/webpack.config.renderer.dev.babel.js",
+    "start:preload": "webpack serve --config ./preload.webpack.js",
     "test": "jest"
   },
   "lint-staged": {
@@ -267,7 +268,8 @@
     "react-router-dom": "^5.2.0",
     "recoil": "^0.2.0",
     "regenerator-runtime": "^0.13.5",
-    "source-map-support": "^0.5.19"
+    "source-map-support": "^0.5.19",
+    "ts-loader": "^9.2.3"
   },
   "devEngines": {
     "node": ">=10.x",

@@ -1,4 +1,4 @@
-export class UpdateLinkedinProfileDTO {
+export type UpdateLinkedinProfileDTO = {
   id: number;
   email?: string;
   password?: string;

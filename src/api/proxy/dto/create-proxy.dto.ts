@@ -1,4 +1,4 @@
-export class CreateProxyDTO {
+export type CreateProxyDTO = {
   ip: string;
   login: string;
   password: string;

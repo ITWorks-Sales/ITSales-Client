@@ -1,4 +1,4 @@
-export class UpdateLinkedinProfileProxyDTO {
+export type UpdateLinkedinProfileProxyDTO = {
   id: number;
   proxyId: number;
 }

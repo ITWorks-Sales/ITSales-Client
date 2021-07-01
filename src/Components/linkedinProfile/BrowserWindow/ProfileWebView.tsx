@@ -3,6 +3,9 @@ import { PageTitleUpdatedEvent } from 'electron/main';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import AdressBar from './AdressBar';
+import path from 'path';
+import { useRecoilState } from 'recoil';
+import linkedinWebviewState from '../atoms/linkedinWebviewState';
 
 export default function ProfileWebView({
   webViewId,
@@ -15,13 +18,13 @@ export default function ProfileWebView({
 }) {
   const { id } = useParams<{ id: string }>();
   const webViewSelector = `webview[data-webviewid="${webViewId}"]`;
-  const [webView, setWebView] = useState<WebviewTag>(
-    document.querySelector(webViewSelector) as WebviewTag
-  );
+
+  const [webViewState, setWebViewState] = useRecoilState(linkedinWebviewState);
   useEffect(() => {
     const copyOfWebView = document.querySelector(webViewSelector) as WebviewTag;
     let oldTitle = '';
-    setWebView(copyOfWebView);
+    setWebViewState(copyOfWebView);
+    console.log(webViewState, copyOfWebView);
     copyOfWebView?.addEventListener('page-title-updated', ((
       e: PageTitleUpdatedEvent
     ) => {
@@ -29,14 +32,18 @@ export default function ProfileWebView({
       if (title !== oldTitle) changePaneTitle(webViewId, title);
       oldTitle = title;
     }) as EventListener);
+    copyOfWebView.addEventListener('dom-ready', () =>
+      copyOfWebView.openDevTools()
+    );
   }, []);
   return (
     <>
-      <AdressBar webView={webView} />
+      <AdressBar webView={webViewState} />
       <webview
         data-webviewid={webViewId}
         src={startPage}
         partition={`persist:${id}`}
+        preload={path.resolve(__dirname, './preload/dist/index.js')}
         style={{
           display: 'inline-flex',
           minWidth: 1280,

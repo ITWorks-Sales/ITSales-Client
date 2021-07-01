@@ -1,4 +1,4 @@
-export class CreateLinkedinProfileDTO {
+export type CreateLinkedinProfileDTO = {
   email: string;
   password: string;
-}
+};

@@ -1,4 +1,4 @@
-export class UpdateProxyDTO {
+export type UpdateProxyDTO = {
   id: number;
   ip?: string;
   login?: string;

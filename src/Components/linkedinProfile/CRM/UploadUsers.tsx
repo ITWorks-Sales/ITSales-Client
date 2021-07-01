@@ -12,7 +12,6 @@ export default function UploadUsers() {
   const [isLoading, setIsLoading] = useRecoilState(CRMUploadUsersLoadingState);
   const linkedinProfileId = useRecoilValue(linkeidnProfileIdState);
   const queryClient = useQueryClient();
-  console.log(linkedinProfileId);
   const parse = (csvFile: string | ArrayBuffer | null) => {
     Papa.parse(csvFile, {
       complete: async (result: any) => {

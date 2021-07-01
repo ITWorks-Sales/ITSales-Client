@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { Switch, Route } from 'react-router-dom';
 import { useSetRecoilState } from 'recoil';
+import Actions from './Actions';
 import linkeidnProfileIdState from './atoms/linkeidnProfileIdState';
 import BrowserWindowView from './BrowserWindow';
 import CRM from './CRM';
@@ -24,6 +25,7 @@ export default function LinkedinProfile() {
       <Col span={21}>
         <Switch>
           <Route path={`${defaultLink}/crm`} component={CRM} />
+          <Route path={`${defaultLink}/actions`} component={Actions} />
         </Switch>
         <div className={showBrowser ? '' : 'hidden'}>
           <BrowserWindowView />

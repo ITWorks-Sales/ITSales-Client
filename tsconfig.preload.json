@@ -1,15 +1,16 @@
 {
-  "include": ["./src/preload/*.ts"],
-  "out": "./src/preload/preload.js",
+  // "out": "./src/preload/preload.js",
+  "include": ["src/preload/index.ts"],
   "compilerOptions": {
+    "outDir": "./src/preload/dist",
+    "watch": true,
     "target": "ES2018",
     "module": "CommonJS",
     "lib": ["dom", "esnext"],
-    "typeRoots": ["./src/types"],
+    "typeRoots": ["src/types"],
     "declaration": true,
     "declarationMap": true,
-    "noEmit": true,
-    "jsx": "react",
+    // "noEmit": true,
     "strict": true,
     "pretty": true,
     "sourceMap": true,
@@ -24,13 +25,7 @@
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
     "allowJs": true
-  },
-  "exclude": [
-    "test",
-    "release",
-    "src/main.prod.js",
-    "src/renderer.prod.js",
-    "src/dist",
-    ".erb/dll"
-  ]
+    // "extendedDiagnostics": true
+    // "explainFiles": true
+  }
 }

@@ -1,3 +1,3 @@
-export class DeleteLinkedinProfileDTO {
+export type DeleteLinkedinProfileDTO = {
   ids: number[];
 }

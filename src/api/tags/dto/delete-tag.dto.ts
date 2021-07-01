@@ -1,3 +1,3 @@
-export class DeleteTagDTO {
+export type DeleteTagDTO = {
   id: number;
 }
