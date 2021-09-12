@@ -11,7 +11,7 @@
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 import path from 'path';
-import { app, BrowserWindow, shell, Menu, MenuItem, clipboard } from 'electron';
+import { app, BrowserWindow, shell, Menu, MenuItem, clipboard, protocol } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 
@@ -148,6 +148,7 @@ ipcMain.on('createNewWindow', async (_, args) => {
     webPreferences: {
       nodeIntegration: true,
       webviewTag: true,
+      enableRemoteModule: true,
     },
   });
 
@@ -156,6 +157,13 @@ ipcMain.on('createNewWindow', async (_, args) => {
   await window.loadURL(`file://${__dirname}/index.html#/linkedinProfile/${id}`);
   window.setTitle(`Linekdin Profile - ${email}`);
   const webViewSession = session.fromPartition(`persist:${id}`);
+  // webViewSession.webRequest.onCompleted({urls:['https://www.linkedin.com/sales-api/salesApiPeopleSearch?q=savedSearch*']},(details) => {
+  //   console.log(details);
+  // })
+  
+ 
+
+
   if (proxy) {
     webViewSession.setProxy({
       proxyRules: `http://${proxy.ip}`,

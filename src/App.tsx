@@ -7,9 +7,16 @@ import HomeNavigation from './Components/home/HomeNavigation';
 import LinkedinProfile from './Components/linkedinProfile';
 import Login from './Components/Login';
 import IPCInitialization from './ipc';
+import { RecoilExternalStatePortal } from './RecoilExternalStatePortal';
 
 const queryClient = new QueryClient();
 queryClient.invalidateQueries('profile');
+
+// Function.prototype.bodyToString = function (): string {
+//   const entire = this.toString();
+//   return entire.slice(entire.indexOf('{') + 1, entire.lastIndexOf('}'));
+// };
+
 export default function App() {
   return (
     <>
@@ -23,6 +30,7 @@ export default function App() {
             </Switch>
           </Router>
         </QueryClientProvider>
+        <RecoilExternalStatePortal />
       </RecoilRoot>
     </>
   );

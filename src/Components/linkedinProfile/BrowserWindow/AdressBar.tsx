@@ -16,12 +16,7 @@ const refreshPage = (webView: WebviewTag) => {
 
 function isValidURL(str: string) {
   var pattern = new RegExp(
-    '^(https?:\\/\\/)?' + // protocol
-    '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
-    '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
-    '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
-    '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
-      '(\\#[-a-z\\d_]*)?$',
+    '^(?:(?:http(?:s)?|ftp)://)(?:\\S+(?::(?:\\S)*)?@)?(?:(?:[a-z0-9\u00a1-\uffff](?:-)*)*(?:[a-z0-9\u00a1-\uffff])+)(?:\\.(?:[a-z0-9\u00a1-\uffff](?:-)*)*(?:[a-z0-9\u00a1-\uffff])+)*(?:\\.(?:[a-z0-9\u00a1-\uffff]){2,})(?::(?:\\d){2,5})?(?:/(?:\\S)*)?$',
     'i'
   ); // fragment locator
   return !!pattern.test(str);
@@ -51,6 +46,7 @@ const AdressBar = ({ webView }: { webView: WebviewTag }) => {
   const [forwardDisabled, setForwardDisabled] = useState(true);
   useEffect(() => {
     if (!webView) return;
+    console.log('updated');
     webView.addEventListener('dom-ready', () => {
       setSearchValue(webView.getURL());
     });

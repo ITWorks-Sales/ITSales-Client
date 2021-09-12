@@ -2,14 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { Tabs } from 'antd';
 import ProfileWebView from './ProfileWebView';
 import * as _ from 'lodash';
+import { useRecoilState } from 'recoil';
+import panesState from './atoms/panesState';
+import { Pane, targetKeyType } from './types';
+import activeKeyState from './atoms/activeKeyState';
+import newTabIndexState from './atoms/newTabIndex';
 const { TabPane } = Tabs;
-
-type Panes = {
-  title: string;
-  content: string | JSX.Element;
-  key: string;
-  closable?: boolean;
-};
 
 const onChange = (
   activeKey: targetKeyType,
@@ -18,21 +16,16 @@ const onChange = (
   setActiveKey(activeKey);
 };
 
-type targetKeyType =
-  | string
-  | React.MouseEvent<Element, MouseEvent>
-  | React.KeyboardEvent<Element>;
-
-let newTabIndex = 1;
 const BrowserTabs = () => {
-  const [activeKey, setActiveKey]: any = useState('1');
-  const [panes, setPanes] = useState<Panes[]>([]);
+  const [activeKey, setActiveKey] = useRecoilState(activeKeyState);
+  const [panes, setPanes] = useRecoilState(panesState);
+  const [newTabIndex, setNewTabIndex] = useRecoilState(newTabIndexState);
 
-  const changePaneTitle = (key: string, title: string) => {
+  const changePaneTitle = (key: string, title: string = 'New Window') => {
     title = title.length > 25 ? title.substring(0, 23) + '...' : title;
     setPanes((panes) =>
       [
-        ..._.filter(panes, (p: Panes) => p.key !== key),
+        ..._.filter(panes, (p: Pane) => p.key !== key),
         {
           ..._.find(panes, { key }),
           title,
@@ -58,8 +51,8 @@ const BrowserTabs = () => {
   useEffect(() => {
     setPanes(initialPanes);
   }, []);
-  const add = (newTabIndex: number, panes: Panes[]) => {
-    const activeKey = `${newTabIndex++}`;
+  const add = (newTabIndex: number, panes: Pane[]) => {
+    const activeKey = `${newTabIndex}`;
     const newPanes = [...panes];
     newPanes.push({
       title: 'Google',
@@ -73,12 +66,13 @@ const BrowserTabs = () => {
 
       key: activeKey,
     });
-    console.log(newPanes);
+    setNewTabIndex(newTabIndex);
     setPanes(newPanes);
     setActiveKey(activeKey);
+    console.log(newPanes);
   };
 
-  const remove = (targetKey: targetKeyType, panes: Panes[]) => {
+  const remove = (targetKey: targetKeyType, panes: Pane[]) => {
     let newActiveKey = activeKey;
     let lastIndex: number;
     panes.forEach((pane, i) => {
@@ -101,8 +95,7 @@ const BrowserTabs = () => {
   const onEdit = (targetKey: targetKeyType, action: 'add' | 'remove') => {
     console.log(typeof targetKey, targetKey);
     if (action === 'add') {
-      newTabIndex++;
-      add(newTabIndex, panes);
+      add(newTabIndex + 1, panes);
     }
     if (action === 'remove') remove(targetKey, panes);
   };
@@ -113,7 +106,7 @@ const BrowserTabs = () => {
       onChange={(activeKey) => {
         onChange(activeKey, setActiveKey);
       }}
-      activeKey={activeKey}
+      activeKey={activeKey as string}
       onEdit={onEdit}
       style={{ height: '100vh' }}
     >

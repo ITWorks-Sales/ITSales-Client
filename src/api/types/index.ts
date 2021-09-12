@@ -65,7 +65,7 @@ export type CRMFilters = {
   tagsFilter: number[];
 };
 
-type ILIUserStringIndex  = {
+type ILIUserStringIndex = {
   state: ILIUserState;
   notes: string;
   full_name: string;
@@ -177,7 +177,7 @@ type ILIUserStringIndex  = {
   company_start_date_10: string;
   company_end_date_10: string;
   [key: string]: string;
-}
+};
 
 export type ILIUser = ILIUserStringIndex & {
   id: number;
@@ -187,4 +187,98 @@ export type ILIUser = ILIUserStringIndex & {
   open_profile: boolean;
   tags: ITag[];
   message_histories: IMessageHistory[];
-}
+};
+
+export type fieldType = 'string' | 'number' | 'bool';
+
+export type field = { key: string; value: string; type: fieldType };
+
+export type fieldWithId = field & { id: number };
+
+export type templateType = 'Inmail' | 'Message';
+
+export type templatesFilters = {
+  currentUserOnly: boolean;
+};
+
+export type Field = {
+  id: number;
+  key: string;
+  value: string;
+  type: fieldType;
+  template?: Template;
+};
+
+export type Template = {
+  id: number;
+  fields: Field[];
+  created_at: Date;
+  type: templateType;
+  linkedin_profile?: ILIProfile;
+  user?: IUser;
+};
+
+export type nodeType = 'Inmail' | 'Queue';
+
+export type minMax = {
+  min: number;
+  max: number;
+};
+
+export type Edge = {
+  id: number;
+  source: string;
+  source_handle: string;
+  target: string;
+  target_handle: string;
+  flow?: Flow;
+};
+
+export type Node = {
+  id: number;
+  position_x: number;
+  position_y: number;
+  edges: Edge[];
+  processed_profiles?: ILIProfile[];
+  flow?: Flow;
+};
+
+export type Flow = {
+  id: number;
+  title: string;
+  view_x: number;
+  view_y: number;
+  zoom: number;
+  edges: Edge[];
+  inmail_nodes: InmailNode[];
+  queue_nodes: QueueNode[];
+  linkedin_profile?: ILIProfile;
+};
+
+export type InmailNode = Node & {
+  success_profile?: ILIProfile[];
+  failed_profiles?: ILIProfile[];
+  success_users_count?: number;
+  failed_users_count?: number;
+  title: string;
+  message: string;
+  state: ILIUserState;
+  next_profile: minMax;
+  click_message: minMax;
+  insert_title: minMax;
+  insert_message: minMax;
+  click_send: minMax;
+};
+
+export type QueueNode = Node & {
+  collected_users?: ILIProfile[];
+  collected_users_count?: number;
+};
+
+export type usersType = 'success_users' | 'failed_users' | '';
+
+export type nodeDetails = {
+  id: number;
+  type: usersType;
+  nodeType: nodeType;
+};

@@ -35,9 +35,9 @@ export default function TagsSelector() {
         filterOption={selectedTagsFilter}
       >
         {tags.map(({ content, color, id }) => (
-          <Tag color={color} key={id}>
-            {content}
-          </Tag>
+          <Select.Option value={id} key={id}>
+            <Tag color={color}>{content}</Tag>
+          </Select.Option>
         ))}
       </Select>
     </>

@@ -1,4 +1,4 @@
-import { CRMFilters, ILIUser } from '../types';
+import { CRMFilters, ILIUser, nodeDetails } from '../types';
 import { AxiosResponse } from 'axios';
 import axios from '../.';
 import { LIHelperType } from './dto/create-lihelper.dto';
@@ -16,11 +16,12 @@ export function getLinkedinUser(id: number): Promise<AxiosResponse<ILIUser>> {
 
 export function getLinkedinUsersPaginated(
   options: IPaginationOptions,
-  filters: CRMFilters
+  filters: CRMFilters,
+  paginationNodeDetails?: nodeDetails
 ): Promise<AxiosResponse<Pagination<ILIUser, IPaginationMeta>>> {
   return axios.get<Pagination<ILIUser, IPaginationMeta>>(
     '/linkedin-user/paginated',
-    { params: { options, filters } }
+    { params: { options, filters, paginationNodeDetails } }
   );
 }
 
@@ -37,13 +38,6 @@ export function createFromLIHelper({
   );
 }
 
-// export function createLinkedinProfile({
-//   email,
-//   password,
-// }: CreateLinkedinProfileDTO): Promise<AxiosResponse<ILIProfile>> {
-//   return axios.post<ILIProfile>('/linkedin-profile', { email, password });
-// }
-
 export function updateLinkedinUser(
   updateObject: UpdateLIUserDTO
 ): Promise<AxiosResponse<ILIUser>> {
@@ -55,16 +49,3 @@ export function updateTagLinkedinUser(
 ): Promise<AxiosResponse<ILIUser>> {
   return axios.put<ILIUser>('/linkedin-user/tag', updateObject);
 }
-
-// export function updateLinkedinProfileProxy({
-//   id,
-//   proxyId,
-// }: UpdateLinkedinProfileProxyDTO): Promise<AxiosResponse<ILIProfile>> {
-//   return axios.put<ILIProfile>('/linkedin-profile/proxy', { id, proxyId });
-// }
-
-// export async function deleteLinkedinProfile(
-//   ids: number[]
-// ): Promise<AxiosResponse<number[]>> {
-//   return axios.delete<number[]>('/linkedin-profile', { data: { ids } });
-// }

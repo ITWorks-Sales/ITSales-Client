@@ -8,6 +8,10 @@
   display: none;
 }
 
+.sidebar-color {
+  background-color: #1f1f1f;
+}
+
 .vertical-center {
   margin: 0;
   position: absolute;

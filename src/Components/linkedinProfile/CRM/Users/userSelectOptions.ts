@@ -10,7 +10,7 @@ const userSelectOption = [
   { value: 'deal_finish', label: 'Deal Finished' },
 ];
 
-const findLabelByValue = (value: ILIUserState) => {
+const findLabelByValue = (value: any) => {
   return userSelectOption.find((option) => option.value === value)!
     .label as ILIUserState;
 };

@@ -12,6 +12,7 @@ export default function ProfileTypeFilter() {
   );
 
   const onChange = (values: Array<string | number | boolean>) => {
+    console.log(values);
     if (values.includes('openProfile')) setOpenProfileFilterState(true);
     else setOpenProfileFilterState(false);
 

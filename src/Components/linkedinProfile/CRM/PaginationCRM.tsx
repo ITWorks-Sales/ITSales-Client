@@ -7,19 +7,22 @@ import { getLinkedinUsersPaginated } from '../../../api/linkedinUser';
 import { useQuery } from 'react-query';
 import userState from './atoms/userState';
 import CRMfiltersState from './atoms/CRMfiltersState';
+import paginationNodeDetailsState from '../atoms/paginationNodeDetailsState';
 
 export default function PaginationCRM() {
   const [currentPage, setCurrentPage] = useRecoilState(currentPageState);
   const [pageSize, setPageSize] = useRecoilState(pageSizeState);
   const setUserState = useSetRecoilState(userState);
   const CRMFilters = useRecoilValue(CRMfiltersState);
+  const paginationNodeDetails = useRecoilValue(paginationNodeDetailsState);
 
   const { isLoading, data: requestData } = useQuery(
-    ['linkedinUsers', currentPage, pageSize, CRMFilters],
+    ['linkedinUsers', currentPage, pageSize, CRMFilters, paginationNodeDetails],
     () =>
       getLinkedinUsersPaginated(
         { limit: pageSize, page: currentPage },
-        CRMFilters
+        CRMFilters,
+        paginationNodeDetails
       ),
     {
       keepPreviousData: true,

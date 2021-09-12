@@ -1,7 +1,15 @@
 import React from 'react';
-import LoadPageAction from './LoadPageAction';
-
+import { Row, Col, Divider } from 'antd';
+import Login from './Login';
+import SNCollecting from './SNCollecting';
 export default function Actions() {
-  // return <div></div>;
-  return <LoadPageAction />;
+  return (
+    <Row justify="space-around">
+      <Divider />
+      <Col span={3}>
+        <Login />
+      </Col>
+      <SNCollecting />
+    </Row>
+  );
 }

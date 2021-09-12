@@ -1,11 +1,8 @@
 {
-  "include": ["./src/preload/*.ts"],
-  "out": "./src/preload/preload.js",
   "compilerOptions": {
     "target": "ES2018",
     "module": "CommonJS",
     "lib": ["dom", "esnext"],
-    "typeRoots": ["./src/types"],
     "declaration": true,
     "declarationMap": true,
     "noEmit": true,
@@ -13,6 +10,7 @@
     "strict": true,
     "pretty": true,
     "sourceMap": true,
+    "experimentalDecorators": true,
     /* Additional Checks */
     "noUnusedLocals": true,
     "noUnusedParameters": true,

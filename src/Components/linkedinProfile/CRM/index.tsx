@@ -1,5 +1,5 @@
 import Layout, { Content, Footer, Header } from 'antd/lib/layout/layout';
-import React from 'react';
+import React, { useEffect } from 'react';
 import PaginationCRM from './PaginationCRM';
 import Users from './Users';
 import UploadUsers from './UploadUsers';
@@ -7,8 +7,14 @@ import TagManagement from './Tags';
 import { Col, Divider, Row } from 'antd';
 import Filters from './Filters';
 import Drawer from './Drawer';
+import { useSetRecoilState } from 'recoil';
+import paginationNodeDetailsState from '../atoms/paginationNodeDetailsState';
 
 const CRM = () => {
+  const setPaginationNodeDetails = useSetRecoilState(
+    paginationNodeDetailsState
+  );
+  useEffect(() => setPaginationNodeDetails(undefined), []);
   return (
     <Layout style={{ height: '100vh' }}>
       <Header>
