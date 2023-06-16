@@ -34,7 +34,7 @@ const SideBar = ({ showBrowser }: { showBrowser: setStateBoolean }) => {
         theme="dark"
         defaultSelectedKeys={['1']}
         mode="inline"
-        style={{ minHeight: '80vh' }}
+        style={{ minHeight: '75vh' }}
         id="profileSidebar"
       >
         <div className="logo"></div>

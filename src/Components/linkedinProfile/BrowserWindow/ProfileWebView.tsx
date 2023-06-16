@@ -9,7 +9,6 @@ import * as _ from 'lodash';
 import { WebViewInteraction } from '../../../WebViewInteraction';
 import { getLinkedinProfiles } from '../../../api/linkedinProfile';
 import { useWebViewInteraction } from '../WebViewInteractionContext';
-import interactionState from '../atoms/interactionState';
 import interactionAction from '../atoms/interactionAction';
 import {
   getRecoilExternalLoadable,
@@ -19,6 +18,8 @@ import newTabIndexState from './atoms/newTabIndex';
 import panesState from './atoms/panesState';
 import { Pane } from './types';
 import activeKeyState from './atoms/activeKeyState';
+import stateBoxState from './atoms/stateBoxState';
+import campaignRunningState from './atoms/campaignRunningState';
 
 const addTab = (startPage: string) => {
   const get = getRecoilExternalLoadable;
@@ -69,8 +70,9 @@ export default function ProfileWebView({
 }) {
   const { id: profileId } = useParams<{ id: string }>();
   const { setInteraction } = useWebViewInteraction();
-  const setInteractionState = useSetRecoilState(interactionState);
+  const setStateBox = useSetRecoilState(stateBoxState);
   const setInteractionAction = useSetRecoilState(interactionAction);
+  const setBlockUserInput = useSetRecoilState(campaignRunningState);
   const webViewSelector = `webview[data-webviewid="${webViewId}"]`;
 
   const [webView, setWebView] = useState<WebviewTag | undefined>();
@@ -110,8 +112,9 @@ export default function ProfileWebView({
       const interaction = new WebViewInteraction(
         copyOfWebView,
         profile!,
-        setInteractionState,
-        setInteractionAction
+        setStateBox,
+        setInteractionAction,
+        setBlockUserInput
       );
 
       setInteraction(interaction);

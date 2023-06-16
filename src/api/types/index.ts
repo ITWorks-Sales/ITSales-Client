@@ -63,6 +63,7 @@ export type CRMFilters = {
   openProfileFilter: boolean;
   userStateFilter: ILIUserState[];
   tagsFilter: number[];
+  nameSearchFilter: string;
 };
 
 type ILIUserStringIndex = {

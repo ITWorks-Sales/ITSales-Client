@@ -5,6 +5,7 @@ import tagsFilterState from './tagsFilterState';
 import userStateFilterState from './userStateFilterState';
 import openProfileFilterState from './openProfileFilterState';
 import moment from 'moment';
+import nameSearcFilterState from './nameSearchFilterState';
 
 const CRMfiltersState = selector({
   key: 'CRMFiltersState',
@@ -16,6 +17,7 @@ const CRMfiltersState = selector({
     const openProfileFilter = get(openProfileFilterState);
     const userStateFilter = get(userStateFilterState);
     const tagsFilter = get(tagsFilterState);
+    const nameSearchFilter = get(nameSearcFilterState);
 
     return {
       contactDateFilter,
@@ -23,6 +25,7 @@ const CRMfiltersState = selector({
       openProfileFilter,
       userStateFilter,
       tagsFilter,
+      nameSearchFilter,
     };
   },
 });

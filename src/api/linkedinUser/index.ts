@@ -9,6 +9,7 @@ import {
 } from 'nestjs-typeorm-paginate';
 import { UpdateLIUserDTO } from './dto/update-liuser.dto';
 import { UpdateTagLIUserDTO } from './dto/update-tag-liuser.dto';
+import { Element } from './dto/create-liuser-snc.dto';
 
 export function getLinkedinUser(id: number): Promise<AxiosResponse<ILIUser>> {
   return axios.get<ILIUser>('/linkedin-user', { params: { id } });
@@ -35,6 +36,21 @@ export function createFromLIHelper({
   return axios.post<void>(
     `/linkedin-user/liHelper?linkedinProfileId=${profileId}`,
     { liHelperData }
+  );
+}
+
+export function createFromSNC({
+  elements,
+  profileId,
+  queueId,
+}: {
+  elements: Element[];
+  profileId: number;
+  queueId: number;
+}) {
+  return axios.post<number>(
+    `/linkedin-user/SNCollecting?linkedinProfileId=${profileId}&queueId=${queueId}`,
+    { elements }
   );
 }
 

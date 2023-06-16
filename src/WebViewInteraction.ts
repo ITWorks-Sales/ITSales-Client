@@ -1,13 +1,21 @@
 import { ILIProfile } from './api/types';
 import {
+  LINKEDIN_FEED_PAGE_URL,
   LINKEDIN_LOGIN_PAGE_URL,
   LOGIN_SUBMIT_BUTTON_SELECTOR,
+  stateBoxDefaultValue,
 } from './constants';
 
 import Electron, { remote, WebContents, webContents } from 'electron';
 import { SetterOrUpdater } from 'recoil';
 import { CustomError } from './CustomError';
 import { SNCollecting } from './types/SNCollecting';
+import { createFromSNC } from './api/linkedinUser';
+import {
+  stateBox,
+  stateBoxOptional,
+} from './Components/linkedinProfile/BrowserWindow/types';
+import * as _ from 'lodash';
 // const SEARCH_PEOPLE_RX = new RegExp(
 //   api.DOMAIN_PRX + '/search/results/people',
 //   'i'
@@ -67,30 +75,39 @@ class WebViewInteraction {
   private readonly _profile: ILIProfile;
   private readonly _webContents: WebContents;
   private readonly _debugger: Electron.Debugger;
-  private _setState: SetterOrUpdater<string>;
-  state: string;
+  private _setStateBox: SetterOrUpdater<stateBox>;
+  private _stateBox: stateBox;
   loggedIn: boolean;
+  setBlockUserInput: SetterOrUpdater<boolean>;
   setAction: SetterOrUpdater<string>;
 
   constructor(
     webView: Electron.WebviewTag,
     profile: ILIProfile,
-    setState: SetterOrUpdater<string>,
-    setAction: SetterOrUpdater<string>
+    setStateBox: SetterOrUpdater<stateBox>,
+    setAction: SetterOrUpdater<string>,
+    setBlockUserInput: SetterOrUpdater<boolean>
   ) {
     this._webView = webView;
     this._webContents = remote.webContents.fromId(webView.getWebContentsId());
     this._profile = profile;
     this._debugger = this._webContents.debugger;
-    this.state = 'Idle';
+    this._stateBox = stateBoxDefaultValue;
     this.loggedIn = false;
-    this._setState = setState;
+    this._setStateBox = setStateBox;
+    this.setBlockUserInput = setBlockUserInput;
     this.setAction = setAction;
   }
 
-  public setState(newState: string) {
-    this._setState(newState);
-    this.state = newState;
+  public setState(newStateValues: stateBoxOptional) {
+    const updatedState = _.merge(this._stateBox, newStateValues);
+    console.log(newStateValues, updatedState);
+    this._setStateBox(updatedState);
+    this._stateBox = updatedState;
+  }
+
+  get state() {
+    return this._stateBox.title;
   }
 
   private sleep(ms: number) {
@@ -144,6 +161,10 @@ class WebViewInteraction {
     } catch (err) {}
   }
 
+  private getCurrentUrl() {
+    return this._webView.getURL();
+  }
+
   private async simulateTyping(text: string) {
     for (let char of text) {
       if (/\r|\n/.test(char)) {
@@ -169,9 +190,18 @@ class WebViewInteraction {
     ];
   }
 
+  @BlockUserInput()
+  @UnblockUserInput()
   @ChangeState('Logging In', 'Idle')
   public async login() {
-    await this.navigateToURL(LINKEDIN_LOGIN_PAGE_URL);
+    await this.navigateToURL(LINKEDIN_FEED_PAGE_URL);
+
+    await this.sleep(3 * 1000);
+
+    if (this.getCurrentUrl().includes(LINKEDIN_FEED_PAGE_URL)) {
+      this.loggedIn;
+      return;
+    }
 
     const [emailCoordinates, passwordCoordinates] =
       (await this.runJavascriptFunction(this.loginClient)) as coordinates[];
@@ -204,9 +234,11 @@ class WebViewInteraction {
     return;
   }
 
+  @BlockUserInput()
+  @UnblockUserInput()
   @ChangeState('Collecting', 'Idle')
   public async SNCollecting(queueId: number) {
-    // this._webView.
+    let currentPage = 1;
     let pages = 0;
     let totalUsers = 0;
     let collected = 0;
@@ -255,8 +287,16 @@ class WebViewInteraction {
 
     //Going next and then back so the request is captured by the event
     await this.runJavascript(`${SN_SEARCH_NEXT_BTN_SELECTOR}.click()`);
+    await this.sleep(3 * 1000);
     await this.runJavascript(`${SN_SEARCH_PREVIOUS_BTN_SELECTOR}.click()`);
     while (this.state === 'Collecting') {
+      this.setState({
+        meta: {
+          title: `Page: ${currentPage}/${pages}`,
+          description: `Total Users: ${totalUsers} \nCollected: ${collected} \nSkipped: ${skipped}`,
+        },
+      });
+      console.log(this._stateBox);
       await this.sleep(7 * 1000);
       for (let retries = 5; retries > 0; retries--) {
         if (length == requests.size) break;
@@ -271,7 +311,16 @@ class WebViewInteraction {
         const possiblePages = Math.floor(paging.total / 25);
         pages = possiblePages < 100 ? possiblePages : 100;
         totalUsers = paging.total;
-        collected += elements.length;
+
+        try {
+          collected += (
+            await createFromSNC({
+              elements,
+              queueId,
+              profileId: this._profile.id,
+            })
+          ).data;
+        } catch (err) {}
       }
 
       //Trying to click on the next page button
@@ -288,6 +337,7 @@ class WebViewInteraction {
         console.log(err);
         break;
       }
+      currentPage++;
     }
     this._debugger.off('detach', onDetach);
     this._debugger.off('message', onMessage);
@@ -313,6 +363,44 @@ function StateGuard(requiredState: string): MethodDecorator {
   };
 }
 
+function BlockUserInput(): MethodDecorator {
+  return function (
+    target: Object,
+    propertyKey: string | symbol,
+    descriptor: PropertyDescriptor
+  ): PropertyDescriptor | void {
+    let original: Function = descriptor.value;
+
+    descriptor.value = async function (
+      this: WebViewInteraction,
+      ...args: any[]
+    ) {
+      this.setBlockUserInput(true);
+      const result = await original.apply(this, args);
+      return result;
+    };
+  };
+}
+
+function UnblockUserInput(): MethodDecorator {
+  return function (
+    target: Object,
+    propertyKey: string | symbol,
+    descriptor: PropertyDescriptor
+  ): PropertyDescriptor | void {
+    let original: Function = descriptor.value;
+
+    descriptor.value = async function (
+      this: WebViewInteraction,
+      ...args: any[]
+    ) {
+      const result = await original.apply(this, args);
+      this.setBlockUserInput(false);
+      return result;
+    };
+  };
+}
+
 function ChangeState(start: string, end: string): MethodDecorator {
   console.log('SetState(): evaluated');
   return function (
@@ -328,10 +416,10 @@ function ChangeState(start: string, end: string): MethodDecorator {
       this: WebViewInteraction,
       ...args: any[]
     ) {
-      this.setState(start);
+      this.setState({ title: start });
       console.log(this.state);
       const result = await original.apply(this, args);
-      this.setState(end);
+      this.setState(_.merge(stateBoxDefaultValue, { title: end }));
       return result;
     };
   };

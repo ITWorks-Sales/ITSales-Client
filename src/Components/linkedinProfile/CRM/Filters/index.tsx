@@ -4,6 +4,7 @@ import TagsSelector from './TagsSelector';
 import ProfileTypeFilter from './ProfileTypeFilter';
 import RadioDatePicker from './RadioDatePicker';
 import UserStateSelector from './UserStateSlector';
+import NameSearchFilter from './NameSearchFilter';
 
 export default function Filters() {
   return (
@@ -13,6 +14,7 @@ export default function Filters() {
       </Typography.Title>
       <br />
       <Space direction="vertical" size={24}>
+        <NameSearchFilter />
         <ProfileTypeFilter />
         <RadioDatePicker />
         <TagsSelector />

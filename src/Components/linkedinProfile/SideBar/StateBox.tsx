@@ -3,24 +3,23 @@ import React from 'react';
 import { Card, Avatar } from 'antd';
 import { useWebViewInteraction } from '../WebViewInteractionContext';
 import { useRecoilValue } from 'recoil';
-import interactionState from '../atoms/interactionState';
+import stateBoxState from '../BrowserWindow/atoms/stateBoxState';
 
 const { Meta } = Card;
 
 export default function StateBox() {
   const { interaction } = useWebViewInteraction();
-  const interactionStateValue = useRecoilValue(interactionState);
+  const { title, meta } = useRecoilValue(stateBoxState);
+  const { src, description } = meta;
   if (!interaction) return <span>WebView was not loaded</span>;
-
+  console.log('rerendered');
   return (
     <>
-      <Card style={{ height: '25vh' }} title={interactionStateValue}>
+      <Card style={{ height: '25vh' }} title={title}>
         <Meta
-          avatar={
-            <Avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />
-          }
-          title="John Smith"
-          description="This is the description"
+          avatar={<Avatar src={src} />}
+          title={meta.title}
+          description={description}
         />
       </Card>
     </>
